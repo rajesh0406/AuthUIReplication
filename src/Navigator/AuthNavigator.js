@@ -8,6 +8,7 @@ import AuthHeader from '../Components/AuthHeader';
 import Colors from '../Theme/Colors';
 import {useNetInfo} from "@react-native-community/netinfo";
 import NoNetworkPage from '../Screens/NoNetworkPage';
+import OTPLogin from '../Screens/OTPLogin';
 const AuthNavigator=createStackNavigator()
 const AuthStack=()=>{
     const netInfo = useNetInfo();
@@ -43,6 +44,16 @@ const AuthStack=()=>{
             borderColor:Colors.grey,
         }
         }}/>   
+    <AuthNavigator.Screen name="otplogin" component={OTPLogin} options={
+        {headerTitle:()=>(<AuthHeader/>),
+        headerLeft:null,
+        gestureEnabled:false,
+        headerStyle:{
+            elevation:0,
+            borderBottomWidth:1,
+            borderColor:Colors.grey,
+        }
+        }}/>   
     <AuthNavigator.Screen name="signup" component={SignupPage} options={
         {headerTitle:()=>(<AuthHeader/>),
         headerLeft:null,
@@ -53,6 +64,7 @@ const AuthStack=()=>{
             borderColor:Colors.grey,
         }
         }}/>   
+     
 </AuthNavigator.Navigator>
             :
             <NoNetworkPage/>

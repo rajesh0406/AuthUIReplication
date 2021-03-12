@@ -6,20 +6,37 @@
  * @flow strict-local
  */
 
-import React,{useEffect,useState} from 'react';
-import {Text } from 'react-native'
-
-
+import React,{useEffect,useReducer} from 'react';
 import SplashScreen from 'react-native-splash-screen';
 import AuthNavigator from './src/Navigator/AuthNavigator';
 import ProductNavigator from './src/Navigator/ProductNavigator';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator} from '@react-navigation/stack';
-import BottomTab from './src/Components/BottomTab';
 import storage from './src/Services/AsyncStorage';
+import {AuthContext} from './src/Store/Context';
 const MainNavigator=createStackNavigator()
+const initialState = {
+  isSignedIn: false,
+};
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "SIGNIN":
+      return {
+        ...state,
+        isSignedIn: true,
+      };
+    case "SIGNOUT":
+      return {
+        ...state,
+        isSignedIn: false,
+      };
+    default:
+      return state;
+  }
+};
+
 const App= () => {
-  const [isSignedIn,setSignedIn]=useState(false);
+  const [state, dispatch] =useReducer(reducer, initialState);
   useEffect(() => {
     SplashScreen.hide();
  }, []);
@@ -29,26 +46,25 @@ const App= () => {
      }).then(auth=>{
        if(auth.token)
        {
-         setSignedIn(true);
+         dispatch({type:'SIGNIN'})
        }
-     })
-  
+     }).catch(e=>{})
  }, [])
 
-  // }, [])
-  return (
-    <>   
+  return ( 
+     <AuthContext.Provider value={{state,dispatch}}>
          <NavigationContainer>
          <MainNavigator.Navigator>
            {
-             (isSignedIn)?
+             (state.isSignedIn)?
              <MainNavigator.Screen name="root" options={{headerShown:false}} component={ProductNavigator}/>
              :
-             <MainNavigator.Screen name="auth" options={{headerShown:false}} component={AuthNavigator}/>
+             <MainNavigator.Screen name="auth"   options={{headerShown:false}} component={AuthNavigator}/>
            }
          </MainNavigator.Navigator>
           </NavigationContainer>
-          </>
+          </AuthContext.Provider>
+         
   );
 };
 

@@ -1,4 +1,4 @@
-import React,{useEffect,useState,useRef} from 'react'
+import React,{useEffect,useState,useRef,useContext} from 'react'
 import { View, Text,StyleSheet,TextInput,ScrollView,ActivityIndicator} from 'react-native'
 import Colors from '../Theme/Colors';
 import Button from '../Components/Button';
@@ -10,7 +10,9 @@ import axios from 'axios';
 import Modal from 'react-native-modal';
 import crashlytics from '@react-native-firebase/crashlytics';
 import storage from '../Services/AsyncStorage';
+import {AuthContext} from '../Store/Context';
 const LoginPage = ({navigation}) => {
+  const {state,dispatch}=useContext(AuthContext)
   const ref = useRef(null);
     const [mail,setMail]=useState("");
     const [loader,setloader]=useState(false);
@@ -46,7 +48,9 @@ const LoginPage = ({navigation}) => {
               user: d.data.user,
             },
             expires:null
-          }).then(()=>setSuccessAlert(true));
+          }).then(()=>{
+            dispatch({type:'SIGNIN'})
+            setSuccessAlert(true)});
         }
         else
         {
@@ -144,8 +148,10 @@ const LoginPage = ({navigation}) => {
       {errors.password && errors.password.type==='validate' && (<Text style={styles.error_message}>Minimum password length is 5</Text>)}
 
                 <Button  text="Log In" ButtonStyle={styles.login_button} TextStyle={styles.login_text} onPress={handleSubmit(onSubmit)}/>
-                <Text style={{padding:20,fontFamily:'Poppins-SemiBold',fontSize:17,textAlign:'center'}}>OR</Text>
+                <Text style={{padding:10,fontFamily:'Poppins-SemiBold',fontSize:17,textAlign:'center'}}>OR</Text>
                 <Button  text="Login with Google" ButtonStyle={styles.google_login_button} TextStyle={styles.login_text} onPress={()=>signIn()}/>
+                <Text style={{padding:10,fontFamily:'Poppins-SemiBold',fontSize:17,textAlign:'center'}}>OR</Text>
+                <Button  text="Login with OTP" ButtonStyle={styles.google_login_button} TextStyle={styles.login_text}  onPress={()=>navigation.navigate('auth',{screen:'otplogin'})}/>
             </View>
         </View>
         <AwesomeAlert
